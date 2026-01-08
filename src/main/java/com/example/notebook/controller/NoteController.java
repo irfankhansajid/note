@@ -41,4 +41,9 @@ public class NoteController {
         noteService.deleteNote(id);
         return ResponseEntity.ok("Note deleted successfull with id: " + id);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Note>> searchNote(@RequestParam(name = "search",defaultValue = "") String searchKeyword) {
+        return ResponseEntity.ok(noteService.searchNote(searchKeyword));
+    }
 }

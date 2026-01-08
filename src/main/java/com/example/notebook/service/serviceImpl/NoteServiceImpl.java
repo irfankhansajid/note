@@ -50,4 +50,9 @@ public class NoteServiceImpl implements NoteService {
                 .orElseThrow(() -> new NotFoundException("Note not found with id: " + id));
         noteRepository.delete(existing);
     }
+
+    @Override
+    public List<Note> searchNote(String searchKeyword ) {
+        return noteRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(searchKeyword, searchKeyword);
+    }
 }
