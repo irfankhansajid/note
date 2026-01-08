@@ -2,6 +2,7 @@ package com.example.notebook.controller;
 
 import com.example.notebook.model.Note;
 import com.example.notebook.service.NoteService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,7 +44,10 @@ public class NoteController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Note>> searchNote(@RequestParam(name = "search",defaultValue = "") String searchKeyword) {
-        return ResponseEntity.ok(noteService.searchNote(searchKeyword));
+    public ResponseEntity<Page<Note>> searchNote(@RequestParam(defaultValue = "", name = "search") String searchKeyword,
+                                                 @RequestParam(defaultValue = "0") int page,
+                                                 @RequestParam(defaultValue = "10") int size)
+    {
+        return ResponseEntity.ok(noteService.searchNote(searchKeyword, page, size));
     }
 }

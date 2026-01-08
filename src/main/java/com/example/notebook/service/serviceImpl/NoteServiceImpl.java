@@ -4,6 +4,10 @@ import com.example.notebook.exception.NotFoundException;
 import com.example.notebook.model.Note;
 import com.example.notebook.repository.NoteRepository;
 import com.example.notebook.service.NoteService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,7 +56,8 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public List<Note> searchNote(String searchKeyword ) {
-        return noteRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(searchKeyword, searchKeyword);
+    public Page<Note> searchNote(String searchKeyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
+        return noteRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(searchKeyword, searchKeyword, pageable);
     }
 }
