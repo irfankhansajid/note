@@ -7,6 +7,10 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -25,7 +29,14 @@ public class User {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 8, max = 50, message = "Password must be at least 8 to 50 characters long")
     @Column(nullable = false)
     private String password;
+
+    @CreationTimestamp
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
 }
