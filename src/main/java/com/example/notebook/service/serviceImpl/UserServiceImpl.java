@@ -4,7 +4,8 @@ import com.example.notebook.dto.LoginRequestDto;
 import com.example.notebook.dto.LoginResponseDto;
 import com.example.notebook.dto.UserRegistrationRequestDto;
 import com.example.notebook.dto.UserRegistrationResponseDto;
-import com.example.notebook.exception.EmailAlreadyExistsException;
+import com.example.notebook.exception.InvalidCredentialsException;
+import com.example.notebook.exception.ResourceAlreadyExistsException;
 import com.example.notebook.model.User;
 import com.example.notebook.repository.UserRepository;
 import com.example.notebook.service.UserService;
@@ -25,7 +26,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserRegistrationResponseDto registerUser(UserRegistrationRequestDto requestDto) {
         if (userRepository.existsByEmail(requestDto.getEmail())) {
-            throw new EmailAlreadyExistsException("User already exist" + requestDto.getEmail());
+            throw new ResourceAlreadyExistsException("User already exist" + requestDto.getEmail());
         }
         User user = new User();
         user.setEmail(requestDto.getEmail());
@@ -41,6 +42,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponseDto loginUser(LoginRequestDto loginRequestDto) {
-        return null;
+        User user = userRepository.findByEmail(loginRequestDto.getEmail())
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
+        boolean isPasswordMatch = passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword());
+        if (!isPasswordMatch) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+        String fakeToken = java.util.UUID.randomUUID().toString();
+        return LoginResponseDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .token(fakeToken)
+                .build();
     }
 }

@@ -1,6 +1,6 @@
 package com.example.notebook.service.serviceImpl;
 
-import com.example.notebook.exception.NotFoundException;
+import com.example.notebook.exception.ResourceNotFoundException;
 import com.example.notebook.model.Note;
 import com.example.notebook.repository.NoteRepository;
 import com.example.notebook.service.NoteService;
@@ -30,7 +30,7 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public Note updateNote(Note note, Long id) {
         Note existingNote = noteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Note not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Note not found"));
         existingNote.setTitle(note.getTitle());
         existingNote.setContent(note.getContent());
         return noteRepository.save(existingNote);
@@ -44,14 +44,14 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public Note getNoteById(Long id) {
         return noteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Note not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + id));
 
     }
 
     @Override
     public void deleteNote(Long id) {
         Note existing = noteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Note not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + id));
         noteRepository.delete(existing);
     }
 
