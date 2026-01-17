@@ -38,4 +38,10 @@ public class Note {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) // optional = false -> note cannot exist without user
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
 }
