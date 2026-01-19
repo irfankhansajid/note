@@ -25,12 +25,10 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Size(max = 50)
-    @NotBlank(message = "Title cannot be blank")
+    @Column(length = 50, nullable = false)
     private String title;
 
-    @Size(max = 2000)
-    @NotNull
+    @Column(length = 2000, nullable = false)
     private String content;
 
     @CreationTimestamp

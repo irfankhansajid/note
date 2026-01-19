@@ -1,17 +1,17 @@
 package com.example.notebook.service;
 
-import com.example.notebook.model.Note;
-import org.springframework.data.domain.Page;
+import com.example.notebook.dto.NoteRequestDto;
+import com.example.notebook.dto.NoteResponseDto;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 
 public interface NoteService {
 
-    Note createNote(Note note);
-    Note updateNote(Note note, Long id);
-    List<Note> getAllNote();
-    Note getNoteById(Long id);
+    NoteResponseDto createNote(NoteRequestDto noteDto, Long userId);
+    NoteResponseDto updateNote(NoteRequestDto noteDto, Long noteId, Long userId);
+    Page<NoteResponseDto> getAllNote(int page, int size);
+    NoteResponseDto getNoteById(Long id);
     void deleteNote(Long id);
-    Page<Note> searchNote(String searchKeyword, int page, int size);
+    Page<NoteResponseDto> searchNote(String searchKeyword, int page, int size, Long userId);
 }
