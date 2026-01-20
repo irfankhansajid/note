@@ -20,7 +20,7 @@ public class NoteController {
         this.noteService = noteService;
     }
 
-    @GetMapping("/all/{userId}")
+    @GetMapping
     public ResponseEntity<Page<NoteResponseDto>> getAllNotes(@RequestParam(defaultValue = "0") int page,
                                                   @RequestParam(defaultValue = "10") int size,
                                                     @PathVariable Long userId)
@@ -28,30 +28,30 @@ public class NoteController {
         return ResponseEntity.ok(noteService.getAllNote(page, size, userId ));
     }
 
-    @GetMapping("/{noteId}/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<NoteResponseDto> getById(@PathVariable Long noteId, @PathVariable Long userId) {
         return ResponseEntity.ok(noteService.getNoteById(noteId, userId));
     }
 
-    @PostMapping("/create/{userId}")
+    @PostMapping
     public ResponseEntity<NoteResponseDto> createNote(@Valid @RequestBody NoteRequestDto note, @PathVariable Long userId) {
         return new ResponseEntity<>(noteService.createNote(note, userId), HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/{id}/user/{userId}")
+    @PutMapping("/{id}")
     public ResponseEntity<NoteResponseDto> updateNote(@Valid @RequestBody NoteRequestDto noteDto,
                                                       @PathVariable Long id,
                                                       @PathVariable Long userId) {
         return new ResponseEntity<>(noteService.updateNote(noteDto, id, userId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{noteId}/{userId}")
+    @DeleteMapping("/{noteId}")
     public ResponseEntity<String> deleteNote(@PathVariable Long noteId, @PathVariable Long userId) {
         noteService.deleteNote(noteId, userId);
         return ResponseEntity.ok("Note deleted successfully with id: " + noteId);
     }
 
-    @GetMapping("/search/{userId}")
+    @GetMapping("/search")
     public ResponseEntity<Page<NoteResponseDto>> searchNote(@RequestParam(defaultValue = "") String searchKeyword,
                                                             @PathVariable Long userId,
                                                             @RequestParam(defaultValue = "0") int page,
