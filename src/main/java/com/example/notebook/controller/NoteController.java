@@ -20,15 +20,17 @@ public class NoteController {
         this.noteService = noteService;
     }
 
-    @GetMapping("/all")
+    @GetMapping("/all/{userId}")
     public ResponseEntity<Page<NoteResponseDto>> getAllNotes(@RequestParam(defaultValue = "0") int page,
-                                                  @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(noteService.getAllNote(page, size ));
+                                                  @RequestParam(defaultValue = "10") int size,
+                                                    @PathVariable Long userId)
+    {
+        return ResponseEntity.ok(noteService.getAllNote(page, size, userId ));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<NoteResponseDto> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(noteService.getNoteById(id));
+    @GetMapping("/{noteId}/{userId}")
+    public ResponseEntity<NoteResponseDto> getById(@PathVariable Long noteId, @PathVariable Long userId) {
+        return ResponseEntity.ok(noteService.getNoteById(noteId, userId));
     }
 
     @PostMapping("/create/{userId}")
@@ -43,10 +45,10 @@ public class NoteController {
         return new ResponseEntity<>(noteService.updateNote(noteDto, id, userId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteNote(@PathVariable Long id) {
-        noteService.deleteNote(id);
-        return ResponseEntity.ok("Note deleted successfull with id: " + id);
+    @DeleteMapping("/{noteId}/{userId}")
+    public ResponseEntity<String> deleteNote(@PathVariable Long noteId, @PathVariable Long userId) {
+        noteService.deleteNote(noteId, userId);
+        return ResponseEntity.ok("Note deleted successfully with id: " + noteId);
     }
 
     @GetMapping("/search/{userId}")

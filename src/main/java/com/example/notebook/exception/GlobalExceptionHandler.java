@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+    public ResponseEntity<ApiResponse<Object>> handleUnauthorizedAccessException(ResourceNotFoundException ex) {
 
         return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
@@ -39,6 +39,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleOther(Exception ex) {
         return buildResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+
 
 
     private ResponseEntity<ApiResponse<Object>> buildResponse(String message, HttpStatus status) {

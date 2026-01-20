@@ -48,13 +48,12 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public NoteResponseDto updateNote(NoteRequestDto noteDto, Long id, Long userId) {
-        Note existingNote = noteRepository.findById(id)
+    public NoteResponseDto updateNote(NoteRequestDto noteDto, Long noteId, Long userId) {
+        Note existingNote = noteRepository.findByIdAndUserId(noteId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found"));
 
-        if (existingNote.getUser().getId().equals(userId)) {
-            throw new RuntimeException("You do not have permission to update this note!");
-        }
+
+
         existingNote.setTitle(noteDto.getTitle());
         existingNote.setContent(noteDto.getContent());
 
@@ -70,9 +69,11 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public Page<NoteResponseDto> getAllNote(int page, int size) {
+    public Page<NoteResponseDto> getAllNote(int page, int size, Long userId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Note> notePage = noteRepository.findAll(pageable);
+
+        Page<Note> notePage = noteRepository.findByUserId(userId,pageable);
+
         return notePage.map(note -> NoteResponseDto.builder()
                 .id(note.getId())
                 .title(note.getTitle())
@@ -83,9 +84,10 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public NoteResponseDto getNoteById(Long id) {
-        Note note = noteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + id));
+    public NoteResponseDto getNoteById(Long noteId, Long userId) {
+        Note note = noteRepository.findByIdAndUserId(noteId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + noteId));
+
 
         return NoteResponseDto.builder()
                 .id(note.getId())
@@ -97,9 +99,10 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public void deleteNote(Long id) {
-        Note existing = noteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + id));
+    public void deleteNote(Long noteId, Long userId){
+        Note existing = noteRepository.findByIdAndUserId(noteId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + noteId));
+
         noteRepository.delete(existing);
     }
 
