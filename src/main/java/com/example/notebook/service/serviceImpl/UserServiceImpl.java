@@ -8,6 +8,7 @@ import com.example.notebook.exception.InvalidCredentialsException;
 import com.example.notebook.exception.ResourceAlreadyExistsException;
 import com.example.notebook.model.User;
 import com.example.notebook.repository.UserRepository;
+import com.example.notebook.security.jwt.JwtService;
 import com.example.notebook.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,12 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -48,11 +51,12 @@ public class UserServiceImpl implements UserService {
         if (!isPasswordMatch) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
-        String fakeToken = java.util.UUID.randomUUID().toString();
+        String token = jwtService.generateToken(user.getId(), user.getEmail());
+
         return LoginResponseDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
-                .token(fakeToken)
+                .token(token)
                 .build();
     }
 }
