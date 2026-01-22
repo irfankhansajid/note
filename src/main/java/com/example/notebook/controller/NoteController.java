@@ -22,43 +22,40 @@ public class NoteController {
 
     @GetMapping
     public ResponseEntity<Page<NoteResponseDto>> getAllNotes(@RequestParam(defaultValue = "0") int page,
-                                                  @RequestParam(defaultValue = "10") int size,
-                                                    @PathVariable Long userId)
+                                                  @RequestParam(defaultValue = "10") int size)
     {
-        return ResponseEntity.ok(noteService.getAllNote(page, size, userId ));
+        return ResponseEntity.ok(noteService.getAllNote(page, size));
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<NoteResponseDto> getById(@PathVariable Long noteId, @PathVariable Long userId) {
-        return ResponseEntity.ok(noteService.getNoteById(noteId, userId));
+    @GetMapping("/{noteId}")
+    public ResponseEntity<NoteResponseDto> getById(@PathVariable Long noteId) {
+        return ResponseEntity.ok(noteService.getNoteById(noteId));
     }
 
     @PostMapping
-    public ResponseEntity<NoteResponseDto> createNote(@Valid @RequestBody NoteRequestDto note, @PathVariable Long userId) {
-        return new ResponseEntity<>(noteService.createNote(note, userId), HttpStatus.CREATED);
+    public ResponseEntity<NoteResponseDto> createNote(@Valid @RequestBody NoteRequestDto note) {
+        return new ResponseEntity<>(noteService.createNote(note), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{noteId}")
     public ResponseEntity<NoteResponseDto> updateNote(@Valid @RequestBody NoteRequestDto noteDto,
-                                                      @PathVariable Long id,
-                                                      @PathVariable Long userId) {
-        return new ResponseEntity<>(noteService.updateNote(noteDto, id, userId), HttpStatus.OK);
+                                                      @PathVariable Long noteId) {
+        return new ResponseEntity<>(noteService.updateNote(noteDto, noteId), HttpStatus.OK);
     }
 
     @DeleteMapping("/{noteId}")
-    public ResponseEntity<String> deleteNote(@PathVariable Long noteId, @PathVariable Long userId) {
-        noteService.deleteNote(noteId, userId);
+    public ResponseEntity<String> deleteNote(@PathVariable Long noteId) {
+        noteService.deleteNote(noteId);
         return ResponseEntity.ok("Note deleted successfully with id: " + noteId);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<NoteResponseDto>> searchNote(@RequestParam(defaultValue = "") String searchKeyword,
-                                                            @PathVariable Long userId,
+    public ResponseEntity<Page<NoteResponseDto>> searchNote(@RequestParam(required = false) String searchKeyword,
                                                             @RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "10") int size
                                                     )
 
     {
-        return ResponseEntity.ok(noteService.searchNote( searchKeyword, page, size, userId));
+        return ResponseEntity.ok(noteService.searchNote(searchKeyword, page, size));
     }
 }

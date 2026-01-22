@@ -7,6 +7,7 @@ import com.example.notebook.model.Note;
 import com.example.notebook.model.User;
 import com.example.notebook.repository.NoteRepository;
 import com.example.notebook.repository.UserRepository;
+import com.example.notebook.security.CurrentUserContext;
 import com.example.notebook.service.NoteService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,14 +21,18 @@ public class NoteServiceImpl implements NoteService {
 
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
+    private final CurrentUserContext currentUserContext;
 
-    public NoteServiceImpl(NoteRepository noteRepository, UserRepository userRepository) {
+    public NoteServiceImpl(NoteRepository noteRepository, UserRepository userRepository, CurrentUserContext currentUserContext) {
         this.noteRepository = noteRepository;
         this.userRepository = userRepository;
+        this.currentUserContext = currentUserContext;
     }
 
     @Override
-    public NoteResponseDto createNote(NoteRequestDto noteDto, Long userId) {
+    public NoteResponseDto createNote(NoteRequestDto noteDto) {
+        Long userId = currentUserContext.getUserId();
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
@@ -38,17 +43,13 @@ public class NoteServiceImpl implements NoteService {
         note.setUser(user);
 
         Note savedNote = noteRepository.save(note);
-        return NoteResponseDto.builder()
-                .id(savedNote.getId())
-                .title(savedNote.getTitle())
-                .content(savedNote.getContent())
-                .userId(savedNote.getUser().getId())
-                .createdAt(savedNote.getCreatedAt())
-                .build();
+        return mapToResponseDto(savedNote);
     }
 
     @Override
-    public NoteResponseDto updateNote(NoteRequestDto noteDto, Long noteId, Long userId) {
+    public NoteResponseDto updateNote(NoteRequestDto noteDto, Long noteId) {
+        Long userId = currentUserContext.getUserId();
+
         Note existingNote = noteRepository.findByIdAndUserId(noteId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found"));
 
@@ -58,48 +59,36 @@ public class NoteServiceImpl implements NoteService {
         existingNote.setContent(noteDto.getContent());
 
         Note updatedNote =  noteRepository.save(existingNote);
-        return NoteResponseDto.builder()
-                .id(updatedNote.getId())
-                .title(updatedNote.getTitle())
-                .content(updatedNote.getContent())
-                .userId(updatedNote.getUser().getId())
-                .createdAt(updatedNote.getCreatedAt())
-                .build();
+        return mapToResponseDto(updatedNote);
 
     }
 
     @Override
-    public Page<NoteResponseDto> getAllNote(int page, int size, Long userId) {
+    public Page<NoteResponseDto> getAllNote(int page, int size) {
+        Long userId = currentUserContext.getUserId();
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
         Page<Note> notePage = noteRepository.findByUserId(userId,pageable);
 
-        return notePage.map(note -> NoteResponseDto.builder()
-                .id(note.getId())
-                .title(note.getTitle())
-                .content(note.getContent())
-                .userId(note.getUser().getId())
-                .createdAt(note.getCreatedAt())
-                .build());
+        return notePage.map(this::mapToResponseDto);
     }
 
     @Override
-    public NoteResponseDto getNoteById(Long noteId, Long userId) {
+    public NoteResponseDto getNoteById(Long noteId) {
+        Long userId = currentUserContext.getUserId();
+
         Note note = noteRepository.findByIdAndUserId(noteId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + noteId));
 
 
-        return NoteResponseDto.builder()
-                .id(note.getId())
-                .title(note.getTitle())
-                .content(note.getContent())
-                .userId(note.getUser().getId())
-                .createdAt(note.getCreatedAt())
-                .build();
+        return mapToResponseDto(note);
     }
 
     @Override
-    public void deleteNote(Long noteId, Long userId){
+    public void deleteNote(Long noteId){
+        Long userId = currentUserContext.getUserId();
+
         Note existing = noteRepository.findByIdAndUserId(noteId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + noteId));
 
@@ -107,17 +96,26 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public Page<NoteResponseDto> searchNote(String searchKeyword, int page, int size, Long userId) {
+    public Page<NoteResponseDto> searchNote(String searchKeyword, int page, int size) {
+        Long userId = currentUserContext.getUserId();
+
         Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
         Page<Note> notePage = noteRepository.findByUserIdAndTitleContainingIgnoreCaseOrUserIdAndContentContainingIgnoreCase(
                 userId, searchKeyword, userId, searchKeyword, pageable);
-        return notePage.map(note ->
-                NoteResponseDto.builder()
-                        .id(note.getId())
-                        .title(note.getTitle())
-                        .content(note.getContent())
-                        .userId(note.getUser().getId())
-                        .createdAt(note.getCreatedAt())
-                        .build());
+        return notePage.map(this::mapToResponseDto);
     }
+
+
+
+    private NoteResponseDto mapToResponseDto(Note note) {
+        return NoteResponseDto.builder()
+                .id(note.getId())
+                .title(note.getTitle())
+                .content(note.getContent())
+                .userId(note.getUser().getId())
+                .createdAt(note.getCreatedAt())
+                .build();
+    }
+
+
 }
