@@ -1,47 +1,48 @@
-# 📓 Note-Taking Application
+#  Note API - Solid v1
 
-A robust, RESTful backend service for managing personal notes, built with **Spring Boot 3+** and **Spring Data JPA**. This project features advanced search capabilities and server-side pagination to handle large volumes of data efficiently.
+A robust, secure RESTful backend service for personal note management. Built with **Spring Boot 3+**, **Spring Security**, and **PostgreSQL**, this API provides a stateless authentication system and optimized data handling.
+
+
+##  Key Features
+
+* **Stateless Authentication:** Secure user registration and login using **JWT (JSON Web Tokens)**.
+* **Secure Password Storage:** Industry-standard password hashing using **BCrypt**.
+* **Advanced Search:** Case-insensitive search across note titles and content using custom JPA queries.
+* **Professional Pagination:** Server-side pagination and sorting using Spring Data `Pageable` to ensure high performance.
+* **JPA Auditing:** Automatic tracking of `createdAt` and `updatedAt` timestamps for every entry.
+* **Global Exception Handling:** Centralized error management for consistent API responses (e.g., 404 Not Found, 401 Unauthorized, 409 Conflict).
+
+##  Tech Stack
+
+* **Framework:** Spring Boot 3.4.1
+* **Security:** Spring Security 6 (JWT)S
+* **Database:** PostgreSQL 
+* **Persistence:** Spring Data JPA 
+* **API Testing:** Bruno / Postman
+
+
+
+##  API Documentation
+
+### 1. Authentication
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Register a new user | No |
+| `POST` | `/api/auth/login` | Authenticate & get JWT | No |
+
+### 2. Note Management
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/notes/search` | Search notes (Paginated) | **Yes** |
+| `POST` | `/api/notes` | Create a new note | **Yes** |
+| `GET` | `/api/notes/{id}` | Get note by ID | **Yes** |
+
+**Sample Search URL:** `GET http://localhost:8080/api/notes/search?searchKeyword=grocery&page=0&size=5`
+**Sample Search URL:** `GET http://localhost:8080/api/notes/search?searchKeyword=grocery`
 
 ---
 
-## 🚀 Key Features
-
-* **Full CRUD Operations**: Create, Read, Update, and Delete notes.
-* **Advanced Search**: Integrated search functionality across titles and content with **Case-Insensitive** matching.
-* **Server-side Pagination**: Optimized data fetching using Spring Data `Pageable` to ensure high performance even with thousands of notes.
-* **Audit Metadata**: Automatic tracking of `createdAt` and `updatedAt` timestamps for every note.
-
----
-
-## 🛠️ Tech Stack
-
-* **Framework**: Spring Boot 3.x
-* **Language**: Java 17+
-* **Database**: H2 (Development) / MySQL or PostgreSQL (Production)
-* **Persistence**: Spring Data JPA / Hibernate
-* **Testing**: Postman/Bruno
-
----
-
-## 📋 API Documentation
-
-### 1. Search Notes (Paginated)
-Retrieve a list of notes matching a specific keyword.
-
-**Endpoint:** `GET /api/search`
-
-| Parameter | Type | Required | Description | Default |
-|:----------| :--- | :--- | :--- | :--- |
-| `search`  | String | **Yes** | Keyword to search in title/content | N/A |
-| `page`    | Integer | No | Page number (starts at 0) | `0` |
-| `size`    | Integer | No | Number of items per page | `10` |
-
-**Sample URL:**
-`http://localhost:8080/api/search?search=grocery&page=0&size=5`
-
----
-
-## ⚙️ Installation & Setup
+##  Installation & Setup
 
 1.  **Clone the repository:**
     ```bash
@@ -49,41 +50,31 @@ Retrieve a list of notes matching a specific keyword.
     cd note
     ```
 
-2.  **Configure Database:**
-    Update `src/main/resources/application.properties` with your database credentials. For development, H2 is used by default.
+2.  **Configure Database:** Create a database named `notebook_db` in PostgreSQL via DBeaver or pgAdmin. Update `src/main/resources/application.properties`:
+    ```properties
+    spring.datasource.url=jdbc:postgresql://localhost:5432/notebook_db
+    spring.datasource.username=your_username
+    spring.datasource.password=your_password
+    ```
 
 3.  **Build and Run:**
     ```bash
     ./mvnw spring-boot:run
     ```
 
----
+##  Testing with Bruno/Postman
 
-## 🧪 Testing with Postman
-
-1.  Set the request type to **GET**.
-2.  Enter the URL: `http://localhost:8080/api/search`.
-3.  In the **Params** tab, add `search` as a key and your search term as the value.
-4.  The response will include a `"content"` array containing your notes and pagination metadata like `totalPages` and `totalElements`.
-
+1.  **Register/Login:** Hit the `/api/auth/login` endpoint with your credentials to receive your JWT.
+2.  **Authorize:** Copy the token and add it to your subsequent requests as a **Bearer Token**.
+    * **Header Key:** `Authorization`
+    * **Value:** `Bearer <your_token_here>`
+3.  **Verify:** Access protected routes like `/api/notes/search`.
 
 
----
 
-## 🤝 Contributing
-
-1.  Fork the Project.
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
-4.  Push to the Branch (`git push origin feature/AmazingFeature`).
-5.  Open a Pull Request.
+## License
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
-
-## 📄 License
-
-Distributed under the MIT License.
-
-# Project Status
-
-This project is complete and represents a learning-focused backend service demonstrating layered architecture, validation, exception handling, searching, and pagination.
+*This project represents a "Solid v1" backend, transitioning from development-grade H2 to production-grade PostgreSQL with full security.*
+**This project is part of a learning path towards building a Notion-like ecosystem**

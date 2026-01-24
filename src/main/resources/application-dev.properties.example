@@ -1,0 +1,12 @@
+# Database Configuration
+# Copy this file to application-dev.properties and fill in your local details
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/notebook_db
+spring.datasource.username=postgres username
+spring.datasource.password=YOUR_POSTGRES_PASSWORD_HERE
+
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
