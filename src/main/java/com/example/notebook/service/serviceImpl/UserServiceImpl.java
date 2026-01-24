@@ -4,12 +4,15 @@ import com.example.notebook.dto.LoginRequestDto;
 import com.example.notebook.dto.LoginResponseDto;
 import com.example.notebook.dto.UserRegistrationRequestDto;
 import com.example.notebook.dto.UserRegistrationResponseDto;
-import com.example.notebook.exception.InvalidCredentialsException;
 import com.example.notebook.exception.ResourceAlreadyExistsException;
 import com.example.notebook.model.User;
+import com.example.notebook.model.UserPrinciple;
 import com.example.notebook.repository.UserRepository;
 import com.example.notebook.security.jwt.JwtService;
 import com.example.notebook.service.UserService;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +22,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtService jwtService) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
@@ -45,17 +50,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponseDto loginUser(LoginRequestDto loginRequestDto) {
-        User user = userRepository.findByEmail(loginRequestDto.getEmail())
-                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
-        boolean isPasswordMatch = passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword());
-        if (!isPasswordMatch) {
-            throw new InvalidCredentialsException("Invalid email or password");
-        }
-        String token = jwtService.generateToken(user.getId(), user.getEmail());
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequestDto.getEmail(),
+                        loginRequestDto.getPassword()
+                )
+        );
+
+
+        UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
+
+        String token = jwtService.generateToken(
+                userPrinciple.getId(),
+                userPrinciple.getUsername(),
+                userPrinciple.getRole()
+        );
 
         return LoginResponseDto.builder()
-                .id(user.getId())
-                .email(user.getEmail())
+                .id(userPrinciple.getId())
+                .email(userPrinciple.getUsername())
                 .token(token)
                 .build();
     }

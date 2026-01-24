@@ -1,5 +1,6 @@
 package com.example.notebook.security.jwt;
 
+import com.example.notebook.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,7 +17,7 @@ public class JwtService {
     private static final String SECRET_KEY = "I-am-very-long-and-super-secret-security-key-32-chars";
     private static final long EXPIRATION_TIME = 1000 * 60 * 60;
 
-    public String generateToken(Long userId, String email) {
+    public String generateToken(Long userId, String email, Role role) {
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + EXPIRATION_TIME);
@@ -24,11 +25,17 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .claim("email", email)
+                .claim("role", role.name())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
 
+    }
+
+    public String extractRole(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("role", String.class);
     }
 
     public Long extractUserId(String token) {

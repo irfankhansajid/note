@@ -5,9 +5,9 @@ import com.example.notebook.dto.NoteResponseDto;
 import com.example.notebook.exception.ResourceNotFoundException;
 import com.example.notebook.model.Note;
 import com.example.notebook.model.User;
+import com.example.notebook.model.UserPrinciple;
 import com.example.notebook.repository.NoteRepository;
 import com.example.notebook.repository.UserRepository;
-import com.example.notebook.security.AuthContext;
 import com.example.notebook.service.NoteService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,17 +22,24 @@ public class NoteServiceImpl implements NoteService {
 
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
-    private final AuthContext authContext;
 
-    public NoteServiceImpl(NoteRepository noteRepository, UserRepository userRepository, AuthContext authContext) {
+
+    public NoteServiceImpl(NoteRepository noteRepository, UserRepository userRepository) {
         this.noteRepository = noteRepository;
         this.userRepository = userRepository;
-        this.authContext = authContext;
+    }
+
+    private Long getCurrentUserId() {
+        UserPrinciple userPrinciple = (UserPrinciple) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        return userPrinciple.getId();
     }
 
     @Override
     public NoteResponseDto createNote(NoteRequestDto noteDto) {
-        Long userId = authContext.getUserId();
+        Long userId = getCurrentUserId();
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -49,7 +56,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public NoteResponseDto updateNote(NoteRequestDto noteDto, Long noteId) {
-        Long userId = authContext.getUserId();
+        Long userId = getCurrentUserId();
 
         Note existingNote = noteRepository.findByIdAndUserId(noteId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found"));
@@ -66,7 +73,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public Page<NoteResponseDto> getAllNote(int page, int size) {
-        Long userId = authContext.getUserId();
+        Long userId = getCurrentUserId();
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
@@ -77,7 +84,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public NoteResponseDto getNoteById(Long noteId) {
-        Long userId = authContext.getUserId();
+        Long userId = getCurrentUserId();
 
         Note note = noteRepository.findByIdAndUserId(noteId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + noteId));
@@ -88,7 +95,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public void deleteNote(Long noteId){
-        Long userId = authContext.getUserId();
+        Long userId = getCurrentUserId();
 
         Note existing = noteRepository.findByIdAndUserId(noteId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + noteId));
@@ -98,7 +105,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public Page<NoteResponseDto> searchNote(String searchKeyword, int page, int size) {
-        Long userId = authContext.getUserId();
+        Long userId = getCurrentUserId();
 
         Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
         Page<Note> notePage = noteRepository.findByUserIdAndTitleContainingIgnoreCaseOrUserIdAndContentContainingIgnoreCase(

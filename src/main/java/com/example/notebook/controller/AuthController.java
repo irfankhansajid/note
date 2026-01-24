@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 @RestController
 public class AuthController {
 

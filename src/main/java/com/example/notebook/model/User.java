@@ -44,4 +44,7 @@ public class User {
     @OneToMany(mappedBy = "user", orphanRemoval = true) // Orphan notes are removed automatically
     private List<Note> notes = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
+
 }
