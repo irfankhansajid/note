@@ -33,15 +33,14 @@ public class JwtService {
 
     }
 
-    public String extractRole(String token) {
+
+
+    public String extractUserEmail(String token) {
         Claims claims = extractAllClaims(token);
-        return claims.get("role", String.class);
+        return claims.get("email", String.class);
     }
 
-    public Long extractUserId(String token) {
-        Claims claims = extractAllClaims(token);
-        return Long.parseLong(claims.getSubject());
-    }
+
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()

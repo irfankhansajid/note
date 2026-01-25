@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleOther(Exception ex) {
-        logger.error(ex.getMessage());
+        logger.error("UnHandle Exception: ",ex);
         return buildResponse("Something went wrong ", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
