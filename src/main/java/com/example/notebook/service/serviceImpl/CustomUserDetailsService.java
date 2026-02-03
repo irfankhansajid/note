@@ -1,6 +1,6 @@
 package com.example.notebook.service.serviceImpl;
 
-import com.example.notebook.exception.ResourceNotFoundException;
+
 import com.example.notebook.model.User;
 import com.example.notebook.model.UserPrinciple;
 import com.example.notebook.repository.UserRepository;
