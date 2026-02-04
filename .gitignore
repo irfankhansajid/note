@@ -1,6 +1,7 @@
 # --- Build and IDE ---
 target/
 .idea/
+.vscode/
 *.iml
 *.iws
 *.ipr
@@ -25,3 +26,4 @@ replay_pid*
 # This keeps your Postgres password off GitHub
 src/main/resources/application-dev.properties
 .env
+
