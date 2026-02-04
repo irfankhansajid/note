@@ -1,6 +1,7 @@
 # --- Build and IDE ---
 target/
 .idea/
+.vscode/
 *.iml
 *.iws
 *.ipr
@@ -32,3 +33,4 @@ Thumbs.db
 # This keeps your Postgres password off GitHub
 src/main/resources/application-dev.properties
 .env
+

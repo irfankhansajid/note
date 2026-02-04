@@ -1,7 +1,6 @@
 package com.example.notebook.repository;
 
 import com.example.notebook.model.Note;
-import com.example.notebook.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
