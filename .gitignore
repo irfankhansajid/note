@@ -21,6 +21,13 @@ HELP.md
 hs_err_pid*
 replay_pid*
 
+.vscode/
+# --- OS Generated Files ---
+.DS_Store
+Thumbs.db
+
+
+
 # --- Environment & Secrets
 # This keeps your Postgres password off GitHub
 src/main/resources/application-dev.properties
