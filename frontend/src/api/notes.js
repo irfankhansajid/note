@@ -1,6 +1,6 @@
 export const fetchMyNotes = async () => {
     const token = localStorage.getItem('token');
-    
+
     const response = await fetch("http://localhost:8080/api/notes", {
         headers: {
             'Authorization': `Bearer ${token}`,

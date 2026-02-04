@@ -1,27 +1,26 @@
-
-import { useState } from 'react'
-import './App.css'
-import Note from './pages/Note'
+import { useState } from 'react';
+import Note from './pages/Note';
 import Login from './pages/Login';
 
 function App() {
-
   const [userToken, setUserToken] = useState(localStorage.getItem('token'));
 
   const logout = () => {
-    localStorage.removeItem('token')
+    localStorage.removeItem('token');
     setUserToken(null);
   }
 
-
   return (
-    <div className='container'>
+    <div className="min-h-screen bg-[#FBFBFD] text-[#1D1D1F]">
        {userToken ? (
         <>
-          <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', background: '#eee' }}>
-            <span>Logged in as User</span>
-            <button onClick={logout}>Logout</button>
+          <nav className="bg-white border-b p-4 flex justify-between items-center mb-4">
+            <span className="font-bold text-xl">Notebook App</span>
+            <button onClick={logout} className="text-red-600 border border-red-600 px-3 py-1 rounded hover:bg-red-100">
+                Logout
+            </button>
           </nav>
+          
           <Note />
         </>
        ) : (
@@ -31,4 +30,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
