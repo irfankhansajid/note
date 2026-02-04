@@ -14,6 +14,8 @@ export default function Note() {
     const [editTitle, setEditTitle] = useState('');
     const [editContent, setEditContent] = useState('');
 
+    const [searchTerm, setSearchTerm] = useState('');
+
     useEffect(() => {
         if (token) {
             fetchMyNotes()
@@ -70,6 +72,10 @@ export default function Note() {
         setEditContent(note.content)
     }
 
+    const filterNotes = notes.filter(n => 
+        n.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        n.content.toLowerCase().includes(searchTerm.toLowerCase())
+    )
 
     return (
         <div>
@@ -81,9 +87,15 @@ export default function Note() {
                 <button type="submit">Add Note</button>
             </form>
 
+            <input 
+                placeholder="Search notes..." 
+                onChange={e => setSearchTerm(e.target.value)} 
+                style={{ width: '100%', padding: '10px', marginBottom: '20px' }}
+            />
+
             <ul>
-                {notes && notes.length > 0 ? (
-                    notes.map(note => (
+                {filterNotes && filterNotes.length > 0 ? (
+                    filterNotes.map(note => (
                     <li key={note.id}>
                         {editingId == note.id ? (
                             <div style={{ background: '#f9f9f9', padding: '10px' }}>
@@ -118,7 +130,7 @@ export default function Note() {
                     </li>
                 ))
             ) : (
-                <p>No notes found in your cloud account.</p>
+                <p>No notes found in your {searchTerm}.</p>
             )}
             </ul>
             <button onClick={() => {localStorage.removeItem('token'); window.location.reload(); }}>Logout</button>

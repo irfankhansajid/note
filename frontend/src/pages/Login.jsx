@@ -3,7 +3,7 @@ import { loginUser } from "../api/auth";
 
 
 
-export default function Login() {
+export default function Login( {onLoginSuccess} ) {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -14,8 +14,10 @@ export default function Login() {
             const data = await loginUser(email, password);
             
             localStorage.setItem('token', data.data.token);
-            alert("Login Success! Token stored.");
-            window.location.reload();
+            if (onLoginSuccess) {
+                onLoginSuccess(data.data.token)
+            }
+            alert("Login Success");
         } catch (err) {
             alert(err.message);
         }
