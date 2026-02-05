@@ -34,3 +34,5 @@ Thumbs.db
 src/main/resources/application-dev.properties
 .env
 
+frontend/.vite/deps/_metadata.json
+frontend/.vite/deps/package.json
